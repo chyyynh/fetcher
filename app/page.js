@@ -1,14 +1,21 @@
-"use client"; // 告訴 Next.js 這個組件應該是客戶端組件
+"use client";
 
 import { useState } from "react";
-import ReactMarkdown from "react-markdown"; // 導入 react-markdown
+import ReactMarkdown from "react-markdown";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
-export default function Home() {
+export default function Component() {
   const [url, setUrl] = useState("");
   const [articleData, setArticleData] = useState(null);
   const [loading, setLoading] = useState(false);
-
-  // console.log(url);
 
   const fetchArticleData = async (e) => {
     e.preventDefault();
@@ -17,15 +24,15 @@ export default function Home() {
 
     try {
       const response = await fetch(`http://localhost:3000/api/`, {
-        method: "POST", // 指定請求方法為 POST
+        method: "POST",
         headers: {
-          "Content-Type": "application/json", // 設置內容類型為 JSON
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ url }), // 將 URL 封裝為 JSON 字符串
+        body: JSON.stringify({ url }),
       });
 
       const data = await response.json();
-      console.log(data.res); // 打印出 API 返回的數據
+      console.log(data.res);
       setArticleData(data.res);
     } catch (error) {
       console.error("Error fetching article:", error);
@@ -35,34 +42,49 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center p-4">
-      <h1 className="text-2xl font-bold mb-4 text-center">Article Fetcher</h1>{" "}
-      {/* 標題置中 */}
-      <form
-        onSubmit={fetchArticleData}
-        className="flex justify-center items-center mb-4"
-      >
-        <input
-          type="url"
-          value={url}
-          onChange={(e) => setUrl(e.target.value.trim())} // 去掉多餘空格
-          placeholder="Enter article URL"
-          required
-          className="border rounded p-2 w-64 mr-2" // Tailwind CSS 樣式
-        />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white rounded p-2 hover:bg-blue-600"
-        >
-          Fetch Article
-        </button>
-      </form>
-      {loading && <p>Loading...</p>}
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="text-3xl font-bold text-center">
+            Article Fetcher
+          </CardTitle>
+          <CardDescription className="text-center">
+            Enter a URL to fetch and display an article
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form
+            onSubmit={fetchArticleData}
+            className="flex flex-col sm:flex-row gap-4 items-center justify-center"
+          >
+            <Input
+              type="url"
+              value={url}
+              onChange={(e) => setUrl(e.target.value.trim())}
+              placeholder="Enter article URL"
+              required
+              className="flex-grow"
+            />
+            <Button type="submit" disabled={loading}>
+              {loading ? (
+                <>
+                  <span className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
+                  Fetching...
+                </>
+              ) : (
+                "Fetch Article"
+              )}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
       {articleData && (
-        <div>
-          <ReactMarkdown>{articleData}</ReactMarkdown>{" "}
-          {/* 渲染 Markdown 內容 */}
-        </div>
+        <Card>
+          <CardContent className="prose dark:prose-invert max-w-none">
+            <ReactMarkdown>{articleData}</ReactMarkdown>
+          </CardContent>
+        </Card>
       )}
     </div>
   );
