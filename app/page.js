@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
+import MarkdownEditor from "react-markdown-editor-lite";
+import "react-markdown-editor-lite/lib/index.css";
 import {
   Card,
   CardContent,
@@ -80,11 +82,29 @@ export default function Component() {
       </Card>
 
       {articleData && (
-        <Card>
-          <CardContent className="prose dark:prose-invert max-w-none">
-            <ReactMarkdown>{articleData}</ReactMarkdown>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col sm:flex-row gap-4">
+          {/* Markdown 編輯器 */}
+          <Card className="flex-1">
+            <CardContent>
+              <MarkdownEditor
+                value={articleData}
+                style={{ height: "400px" }}
+                renderHTML={(text) => <ReactMarkdown>{text}</ReactMarkdown>}
+                onChange={({ text }) => setArticleData(text)}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Markdown 預覽區域
+          <Card className="flex-1">
+            <CardHeader>
+              <CardTitle className="text-xl">Preview</CardTitle>
+            </CardHeader>
+            <CardContent className="prose dark:prose-invert max-w-none">
+              <ReactMarkdown>{articleData}</ReactMarkdown>
+            </CardContent>
+          </Card> */}
+        </div>
       )}
     </div>
   );
