@@ -54,7 +54,7 @@ async function fetchArticleContent(url) {
     const title = $("title").text();
     const Title = `# ${title} ${await translateWithAzure(title)} \n\n`; // Markdown 標題
 
-    const articleLink = `原文連結: ${url}`;
+    const articleLink = `原文連結: ${url} \n\n`;
 
     // 抓取所有段落和圖片，按出現順序加入
     const elements = $("p, img"); // 將選取的元素儲存到一個變數中
@@ -90,7 +90,7 @@ async function fetchArticleContent(url) {
     const fullContent = `${Title}${articleLink}${contentArray.join("\n\n")}`;
 
     // 返回最終的 Markdown 內容
-    return fullContent;
+    return { title: Title, content: fullContent };
   } catch (error) {
     console.error("抓取失敗:", error);
   }
