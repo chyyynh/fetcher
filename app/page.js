@@ -5,8 +5,11 @@ import ReactMarkdown from "react-markdown";
 import MarkdownEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
 import { Button } from "@/components/ui/button";
+import { Title } from "@radix-ui/react-toast";
+// import { useToast } from "@/hooks/use-toast";
 
 export default function Component() {
+  // const { toast } = useToast();
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
   const [articleData, setArticleData] = useState("");
@@ -32,7 +35,13 @@ export default function Component() {
       console.log(response);
 
       const data = await response.json();
+
+      setTitle(data.res.title);
+      console.log(`title:\n\n${title}\n`);
+
       setArticleData(data.res.content);
+      console.log(`content:\n\n${articleData}\n`);
+
       setFetched(true);
     } catch (error) {
       console.error("Error fetching article:", error);
@@ -41,8 +50,34 @@ export default function Component() {
     }
   };
 
-  const handleUpload = () => {
-    // 处理上传逻辑
+  const handleUpload = async () => {
+    console.log(`title:\n\n${title}\n`);
+    console.log(`content:\n\n${articleData}\n`);
+    setUploading(true);
+    try {
+      const response = await fetch(
+        "http://localhost:3000/api/upload-to-hackmd",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ title: title, content: articleData }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log(`上傳成功 HackMD 連結：${data.url}`);
+      } else {
+        throw new Error(data.message || "上傳失敗");
+      }
+    } catch (error) {
+      console.error("上傳到 HackMD 時出錯:", error);
+    } finally {
+      setUploading(false);
+    }
     console.log("Uploading article...");
   };
 
@@ -58,7 +93,7 @@ export default function Component() {
               onChange={(e) => setUrl(e.target.value.trim())}
               placeholder="Enter article URL"
               required
-              className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              className="bg-white text-black hover:bg-white/90 flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
             />
             <Button
               type="submit"
