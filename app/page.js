@@ -24,7 +24,7 @@ export default function Component() {
     setFetched(false);
 
     try {
-      const response = await fetch(`http://localhost:3000/api/`, {
+      const response = await fetch(`/api/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,16 +55,13 @@ export default function Component() {
     // console.log(`content:\n\n${articleData}\n`);
     setUploading(true);
     try {
-      const response = await fetch(
-        "http://localhost:3000/api/upload-to-hackmd",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ title: title, content: articleData }),
-        }
-      );
+      const response = await fetch(`/api/upload-to-hackmd`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title: title, content: articleData }),
+      });
 
       const data = await response.json();
 
