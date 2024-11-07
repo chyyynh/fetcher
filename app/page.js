@@ -5,11 +5,11 @@ import ReactMarkdown from "react-markdown";
 import MarkdownEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
 import { Button } from "@/components/ui/button";
-import { Title } from "@radix-ui/react-toast";
-// import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 export default function Component() {
-  // const { toast } = useToast();
+  const { toast } = useToast();
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
   const [articleData, setArticleData] = useState("");
@@ -51,8 +51,8 @@ export default function Component() {
   };
 
   const handleUpload = async () => {
-    console.log(`title:\n\n${title}\n`);
-    console.log(`content:\n\n${articleData}\n`);
+    // console.log(`title:\n\n${title}\n`);
+    // console.log(`content:\n\n${articleData}\n`);
     setUploading(true);
     try {
       const response = await fetch(
@@ -69,6 +69,22 @@ export default function Component() {
       const data = await response.json();
 
       if (response.ok) {
+        toast({
+          title: "上傳成功",
+          description: `HackMD 連結：${data.url}`,
+          action: (
+            <button
+              className="text-sm text-blue-500 underline inline-block ml-2" // 調整文字大小和樣式
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                window.open(`${data.url}`, "_blank"); // 打開新標籤頁
+              }}
+            >
+              查看
+            </button>
+          ),
+        });
         console.log(`上傳成功 HackMD 連結：${data.url}`);
       } else {
         throw new Error(data.message || "上傳失敗");
@@ -102,13 +118,15 @@ export default function Component() {
             >
               {loading ? "Fetching..." : "Fetch"}
             </Button>
+
             {fetched && (
               <Button
                 type="button"
                 onClick={handleUpload}
+                disabled={uploading}
                 className="bg-black text-white hover:bg-black/90"
               >
-                Upload
+                {uploading ? "Uploading..." : "Upload"}
               </Button>
             )}
           </form>
@@ -117,12 +135,6 @@ export default function Component() {
         {/* Editor Section */}
         {fetched && (
           <div className="bg-white rounded-lg shadow-sm">
-            <div className="border-b">
-              <div className="flex px-4 py-2">
-                <div className="w-1/2 font-medium">Markdown</div>
-                <div className="w-1/2 font-medium">Preview</div>
-              </div>
-            </div>
             <MarkdownEditor
               value={articleData}
               style={{ height: "calc(100vh - 200px)" }}
@@ -131,7 +143,7 @@ export default function Component() {
               className="border-none"
               config={{
                 view: {
-                  menu: false,
+                  menu: true,
                   md: true,
                   html: true,
                 },
