@@ -12,9 +12,9 @@ export async function POST(request) {
 
   try {
     // HackMD API 端點
-    const hackmdApiUrl = "https://api.hackmd.io/v1/notes";
+    const hackmdApiUrl = "https://api.hackmd.io/v1/teams/funblocks/notes";
 
-    // 確保在環境變量中設置了 HackMD API 令牌
+    // 確保在環境變量中設置了 HackMD API Token
     const hackmdApiToken = process.env.HACKMD_API_TOKEN;
 
     if (!hackmdApiToken) {
